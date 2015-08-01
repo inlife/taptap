@@ -74,6 +74,14 @@ Game.prototype.regenerate = function() {
 };
 
 /**
+ * Restart game
+ * @param {int} [size] - If provided, game will be resized
+ */
+Game.prototype.restart = function(size) {
+    this.setSize( (size) ? size : this.size );
+};
+
+/**
  * Resize html according to game size data
  */
 Game.prototype.resize = function() {
@@ -88,10 +96,11 @@ Game.prototype.resize = function() {
 /**
  * Resize game field, resize html, regenerate cells
  * @param {int} size - New size of the field
+ * @param {bool} [force] - Force size, useful for restart
  */
-Game.prototype.setSize = function(size) {
+Game.prototype.setSize = function(size, force) {
 
-    if (size != this.size) {
+    if (size != this.size || force === true) {
         // Save new size
         this.size = size;
 
