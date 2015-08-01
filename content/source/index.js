@@ -7,16 +7,22 @@ var C_BASIC_SCALE = 100; // Equals to scss's $c-basic-scale, no px
 
 $(document).ready(function() {
     // Create game object, provided selectors, size
-    var game = new Game({ 
+    var myGame = new Game({ 
         field: '.field', 
         line: '.line', 
         cell: '.cell'
-    }, 5);
+    }, 4);
 
     // Bind resize event to game resize
     $(window).resize(function() {
-        game.resize();
+        myGame.resize();
     });
+
+    myGame.on('victory', function() {
+        console.log('you win! ctrl+r to restart');
+    });
+
+    dbg = myGame;
 });
 
 // Disable scrolling
