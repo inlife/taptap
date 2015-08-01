@@ -21,7 +21,13 @@ var conf = {
         optNameMin: 'all.min.css'
     },
     js: {
-        wrkPath: ['bower_components/jquery/dist/jquery.js', 'content/source/*.js'],
+        wrkPath: [
+            'bower_components/jquery/dist/jquery.js', 
+            'bower_components/fastclick/lib/fastclick.js', 
+            'content/source/Cell.js',
+            'content/source/Game.js',
+            'content/source/index.js'
+        ],
         optPath: 'content/build/js',
         optName: 'all.js',
         optNameMin: 'all.min.js'

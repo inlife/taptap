@@ -1,13 +1,19 @@
 doctype html
 html(lang="en")
-  head
-    title swap
-    link(rel='stylesheet', type='text/css', href='css/all.min.css')
-    script(src='js/all.min.js')
-  body
-    main
-      ul
-        - var n = 0
-        while n < 16
-          li
-          - n++
+    head
+        title swap
+        link(rel='stylesheet', type='text/css', href='css/all.min.css')
+        script(src='js/all.js')
+        meta(name='viewport', content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no')   
+    body(ontouchstart)
+        main
+            -var size = 4
+            div(class='field', data-size=size)
+                -var x = 0
+                while x < size
+                    -x++
+                    div.line
+                        -var y = 0
+                        while y < size
+                            -y++
+                            div(class='cell',id='cell_' + x + '_' + y)

@@ -3,57 +3,83 @@ $c-block-1: #00A878;
 $c-block-2: #F95738;
 $c-block-bg: #F0F2EF;
 $c-bg: #272D2D;
+
+// These values are js-dependent
+// Need to be changed in css and js simultaneously
+$c-size: .88em; // cell size
+$c-space: 0.05em; // space between cells-cells and between borders-cells 
+$c-basic-scale: 100px; // default cell scale
+
+html {
+    // Disable scrolling
+    margin: 0; 
+    height: 100%; 
+    overflow: hidden
+}
+
 body {
-  background-color: $c-bg;
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-  // for vertical align
-  position: relative;
-  display: table;
-  width: 100%;
-  height: 100vh;
+    background-color: $c-bg;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+
+    // for vertical align
+    position: relative;
+    display: table;
+    width: 100%;
+    height: 100vh;
+
+    // Basic body scale, can be changed via device width
+    font-size: $c-basic-scale;
+
+    // Disable user select
+    -webkit-touch-callout: none;
+    user-select: none;
+
+    // Enable hardware rendering for iOS
+    transform: translate3d(0,0,0);
 }
 
 main {
-  width: 100%;
-  height: 450px;
-  margin: 0 auto;
-  padding: 2em 0;
-  // for vertical align
-  display: table-cell;
-  vertical-align: middle;
+    margin: 0 auto;
+    
+    // for vertical align
+    display: table-cell;
+    vertical-align: middle;
 }
 
-ul {
-  width: 100%;
-  height: 100%;
-  max-width: 450px;
-  max-height: 450px;
-  max-width: 450px;
-  min-height: 200px;
-  min-width: 200px;
-  margin: 0 auto;
-  background-color: $c-block-bg;
-  display: block;
-  border-radius: $border-radius;
-  overflow: hidden;
+.field {
+    margin: 0 auto;
+    background-color: $c-block-bg;
+    border-radius: $border-radius;
+    overflow: hidden;
+    padding: $c-space;
 }
 
-li {
-  width: 22.5%;
-  height: 22.5%;
-  margin: 2% 0 0 2%;
-  float: left;
-  border-radius: $border-radius;
-  box-sizing: border-box;
-  transition: all 0.2s;
-  & {
-    background: $c-block-2;
-  }
-  &.on {
-    background: $c-block-1;
-  }
-  &:active,
-  &.on:active {
-    transform: scale(0.85, 0.85);
-  }
+.line {
+    width: auto;
+    height: auto;
+    clear: both;
+    overflow: hidden;
+}
+
+.cell {
+    width: $c-size;
+    height: $c-size;
+    margin: $c-space;
+    float: left;
+    border-radius: $border-radius;
+    box-sizing: border-box;
+
+    // Transition only for transforms (scaling)
+    transition: transform 100ms ease-in-out;
+
+    & {
+        background: $c-block-2;
+    }
+    &.on {
+        background: $c-block-1;
+    }
+    &:active,
+    &.on:active {
+        transform: scale(0.85, 0.85);
+    }
 }

@@ -12,6 +12,7 @@
   ],
   "dependencies": {
     "reset": "http://meyerweb.com/eric/tools/css/reset/reset.css",
-    "jquery": "~2.1.4"
+    "jquery": "~2.1.4",
+    "fastclick": "~1.0.6"
   }
 }
