@@ -1,3 +1,5 @@
+"use strict";
+
 /**
  * Create game object, attach or regenerate field, bind cells, resize
  * 
