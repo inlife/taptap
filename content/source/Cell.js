@@ -2,7 +2,7 @@
 
 /**
  * Create game object, attach or regenerate field, bind cells, resize
- * 
+ *
  * @constructor Game
  * @param {string} id Unique html identifier for cell. ex.: cell_1_2
  * @param {Game} game - Link to game object, for triggering events
@@ -15,7 +15,7 @@ var Cell = function(id, game, state) {
     this.connected = [];
 
     // Update html data according to object
-    this.initialize( game );
+    this.initialize(game);
 };
 
 /**
@@ -39,6 +39,20 @@ Cell.prototype.initialize = function(game) {
 };
 
 /**
+ * Connect cell to other cell
+
+ * @param {Cell} cell - Cell object that we want to connect
+ * @param {bool} [backward] - Connect cells backward
+ */
+Cell.prototype.connect = function(cell, backward) {
+    if (backward) {
+        return cell.connect(this);
+    }
+
+    this.connected.push(cell);
+};
+
+/**
  * Toggle cell state
  */
 Cell.prototype.toggle = function() {
@@ -53,20 +67,6 @@ Cell.prototype.toggleConnected = function() {
     for (var i = this.connected.length - 1; i >= 0; i--) {
         this.connected[i].toggle();
     };
-};
-
-/**
- * Connect cell to other cell
-
- * @param {Cell} cell - Cell object that we want to connect
- * @param {bool} [backward] - Connect cells backward
- */
-Cell.prototype.connect = function(cell, backward) {
-    if (backward) {
-        return cell.connect( this );
-    }
-
-    this.connected.push( cell );
 };
 
 /**
