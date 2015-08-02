@@ -23,8 +23,9 @@ var conf = {
     js: {
         wrkPath: [
             'bower_components/jquery/dist/jquery.js', 
-            'bower_components/fastclick/lib/fastclick.js', 
-            'content/source/Cell.js',
+            'bower_components/fastclick/lib/fastclick.js',
+            'content/source/Store.js',
+            'content/source/Cell.js', 
             'content/source/Game.js',
             'content/source/index.js'
         ],

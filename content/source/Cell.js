@@ -4,6 +4,7 @@
  * Create game object, attach or regenerate field, bind cells, resize
  *
  * @constructor Game
+ * @requires JQuery.js
  * @param {string} id Unique html identifier for cell. ex.: cell_1_2
  * @param {Game} game - Link to game object, for triggering events
  * @param {int} [state=] - Starting state of cell 0 or 1, if not provided random state will be generated
@@ -20,6 +21,7 @@ var Cell = function(id, game, state) {
 
 /**
  * Initialize cell object, bind html events, set html data
+ * @private
  * @param {Game} game - Link to game object, for triggering events
  */
 Cell.prototype.initialize = function(game) {
@@ -34,13 +36,14 @@ Cell.prototype.initialize = function(game) {
         self.toggle();
         self.toggleConnected();
 
-        game.trigger('cellChange');
+        game.trigger('cell:toggle');
     });
 };
 
 /**
  * Connect cell to other cell
-
+ *
+ * @public
  * @param {Cell} cell - Cell object that we want to connect
  * @param {bool} [backward] - Connect cells backward
  */
@@ -54,6 +57,7 @@ Cell.prototype.connect = function(cell, backward) {
 
 /**
  * Toggle cell state
+ * @public
  */
 Cell.prototype.toggle = function() {
     this.state = (this.state) ? 0 : 1;
@@ -62,6 +66,7 @@ Cell.prototype.toggle = function() {
 
 /**
  * Toggle connected cells state
+ * @private
  */
 Cell.prototype.toggleConnected = function() {
     for (var i = this.connected.length - 1; i >= 0; i--) {
@@ -71,6 +76,7 @@ Cell.prototype.toggleConnected = function() {
 
 /**
  * Delete cell
+ * @public
  */
 Cell.prototype.remove = function() {
     for (var i = this.connected.length - 1; i >= 0; i--) {

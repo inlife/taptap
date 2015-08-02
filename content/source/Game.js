@@ -4,7 +4,8 @@
  * Create game object, attach or regenerate field, bind cells, resize
  *
  * @constructor Game
- * @param {Object} identifers - Selectors for field, line, cell ex. {field: '#mygame', line: '.l', cell: '.a'}
+ * @requires JQuery.js, Cell.js
+ * @param {Object} selectors - Selectors for field, line, cell ex. {field: '#mygame', line: '.l', cell: '.a'}
  * @param {int} [size=4] - Size of field ex. 4 (4x4), 3 (3x3), 10 (10x10)
  * @param {int} [percent=30] - Percentage of cells for each task in algorithm
  */
@@ -37,11 +38,19 @@ var Game = function(selectors, size, percent) {
 
 /**
  * Register inner game events
+ *
+ * @private
+ *
+ * Available events:
+ * game:
+ *    - complete|save|load
+ * cell:
+ *    - toggle
  */
 Game.prototype.registerEvents = function() {
     var self = this;
 
-    this.on('cellChange', function() {
+    self.on('cell:toggle', function() {
 
         // Check if we won
         var states = 0;
@@ -51,17 +60,17 @@ Game.prototype.registerEvents = function() {
         };
 
         if (states === 0 || states === self.size * self.size) {
-            self.trigger('victory');
+            self.trigger('game:complete');
         }
 
     });
 
-    this.on('victory', function() {
+    self.on('game:complete', function() {
 
         console.log('you won! now it will be restarted, and BIGGER!!');
 
         setTimeout(function() {
-            myGame.restart( myGame.size + 1 );
+            self.restart( self.size + 1 );
         }, 1000);
 
     });
@@ -69,6 +78,7 @@ Game.prototype.registerEvents = function() {
 
 /**
  * Regenerate field using our game.size
+ * @private
  */
 Game.prototype.regenerate = function() {
     this.removeCells();
@@ -87,7 +97,8 @@ Game.prototype.regenerate = function() {
 
 /**
  * Restart game
- * @param {int} [size] - If provided, game will be resized
+ * @public
+ * @param {int} [size] - If provided, game will be also resized
  */
 Game.prototype.restart = function(size) {
     this.setSize( (size) ? size : this.size );
@@ -95,6 +106,7 @@ Game.prototype.restart = function(size) {
 
 /**
  * Resize game field, resize html, regenerate cells
+ * @public
  * @param {int} size - New size of the field
  * @param {bool} [force] - Force size, useful for restart
  */
@@ -116,6 +128,7 @@ Game.prototype.setSize = function(size, force) {
 
 /**
  * Resize html according to game size data
+ * @public
  */
 Game.prototype.resize = function() {
     this.entity.css('width' , this.getFieldSize());
@@ -128,6 +141,7 @@ Game.prototype.resize = function() {
 
 /**
  * Return size of our field on x/y axis in em
+ * @private
  * @return {string}
  */
 Game.prototype.getFieldSize = function() {
@@ -136,6 +150,7 @@ Game.prototype.getFieldSize = function() {
 
 /**
  * Return static, initial default size of our field on x/y axis in pixels
+ * @private
  * @return {int}
  */
 Game.prototype.getFieldSizeinPixelsStatic = function() {
@@ -144,6 +159,7 @@ Game.prototype.getFieldSizeinPixelsStatic = function() {
 
 /**
  * Add new cell into game register
+ * @private
  * @param {Cell} cell - Created cell object
  */
 Game.prototype.addCell = function(cell) {
@@ -152,6 +168,7 @@ Game.prototype.addCell = function(cell) {
 
 /**
  * Get random cell from registered cells
+ * @private
  * @return {Cell} cell - Cell object
  */
 Game.prototype.getRandomCell = function() {
@@ -160,6 +177,7 @@ Game.prototype.getRandomCell = function() {
 
 /**
  * Remove all cells, and html data
+ * @private
  */
 Game.prototype.removeCells = function() {
     for (var i = this.cells.length - 1; i >= 0; i--) {
@@ -173,6 +191,7 @@ Game.prototype.removeCells = function() {
 
 /**
  * Event system, binding event listeners
+ * @public
  * @param {string} name - Name of event to listen
  * @param {Function} callback - Function callback
  */
@@ -186,6 +205,7 @@ Game.prototype.on = function(name, callback) {
 
 /**
  * Event system, triggering event
+ * @public
  * @param {string} name - Name of event to trigger
  * @param {Object} [event] - Event data, that will be sent to callback
  */
@@ -198,8 +218,69 @@ Game.prototype.trigger = function(name, event) {
 };
 
 /**
+ * Storage system, save current game
+ * @public
+ * @requires Store.js
+ * @param {string} [name=_sgp1_save_1] - Name of savefile to save game, defaults to _sgp1_save_1
+ */
+Game.prototype.save = function(name) {
+    var self = this;
+
+    // Default savefile name
+    name = (name) ? name : '_sgp1_save_1';
+
+    // Create document, that will be stored to in storage
+    var savedata = {
+        time: Date.now(),
+
+        game: {
+            size: self.size,
+            cells: []
+        }
+    };
+
+    // Add all cells, and their data to document
+    for (var i = this.cells.length - 1; i >= 0; i--) {
+        var cell = this.cells[i];
+        var connected = [];
+
+        // Iterate over cell connections
+        for (var j = cell.connected.length - 1; j >= 0; j--) {
+            var subcell = cell.connected[j];
+            connected.push(subcell.id);
+        };
+
+        // Push cell subdocument into savedata document
+        savedata.game.cells.push({
+            id: cell.id,
+            state: cell.state,
+            connected: connected
+        });
+    };
+
+    // Save document, and trigger event 
+    // [TODO] Add encryption, to add minimal prevention for modifications
+    store(name, savedata);
+    self.trigger('game:save');
+};
+
+/**
+ * Storage system, load saved game into current game
+ * [TODO]
+ * @public
+ * @requires Store.js
+ * @param {string} [name=_sgp1_save_1] - Name of savefile, defaults to _sgp1_save_1
+ */
+Game.prototype.load = function(name) {
+    name = (name) ? name : '_sgp1_save_1';
+
+    console.log( store(name) );
+};
+
+/**
  * Create cell objects, and bind them to clicks
  * Launch main algo
+ * @private
  */
 Game.prototype.bindCells = function() {
     var self = this;
@@ -218,16 +299,76 @@ Game.prototype.bindCells = function() {
     self.connectCells_v1();
 };
 
+/**
+ * main algo v1 (very easy)
+ * @private
+ */
+Game.prototype.connectCells_v1 = function() {
+    var self = this;
+
+    var count = this.size * this.size;
+    var part = Math.floor( count / 100 * this.percent );
+
+    // Generate pool of free cells
+    var pool = {};
+    var getRandomCellFromPull = function(compareCell) {
+        // Pseudo infinite cycle (ends after 9999 iterations)
+        for (var i = 0; i < 9999; i++) {
+
+            // Try to find empty cell
+            var cell = self.getRandomCell();
+
+            // If cell was not used, get it
+            if (pool[cell.id] === true) {
+
+                // If proviede compareCell, compare them, against equality
+                if (compareCell && cell.id === compareCell.id) {
+                    continue;
+                }
+
+                pool[cell.id] = false;
+                return cell;
+            }
+        }
+    };
+    for (var i = 0; i < count; i++) {
+        pool[this.cells[i].id] = true;
+    }
+
+    //[START] One way generator (single solution)
+
+    // Get first (last) random cell
+    var pcell = getRandomCellFromPull();
+
+    // Iterate over N cells
+    for (var i = 0; i < part; i++) {
+        // Get new random cell
+        var cell = getRandomCellFromPull(pcell);
+
+        // Connect random cell with previous cell
+        pcell.connect( cell, true );
+        // Overwrite previous with current
+        pcell = cell;
+    }
+
+    //[END] One way
 
 
+    //[START] Double switchers generator, use last (first) of previous generator
 
+    for (var i = 0; i < part; i++) {
+        var cell = null;
 
+        for (var j = 0; j < 2; j++, i++) {
+            cell = getRandomCellFromPull(pcell);
+            pcell.connect( cell );
+        };
 
+        pcell = cell;
+    }
 
-
-
-
-
+    //[END] Double switchers
+};
 
 
 
@@ -295,92 +436,6 @@ Game.prototype.connectCells = function() {
 
     for (var i = 0; i < part; i++) {
         var cell = null;
-
-        pcell = cell;
-    }
-
-    //[END] Double switchers
-};
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/**
- * main algo v1 (very easy)
- */
-Game.prototype.connectCells_v1 = function() {
-    var self = this;
-
-    var count = this.size * this.size;
-    var part = Math.floor( count / 100 * this.percent );
-
-    // Generate pool of free cells
-    var pool = {};
-    var getRandomCellFromPull = function(compareCell) {
-        // Pseudo infinite cycle (ends after 9999 iterations)
-        for (var i = 0; i < 9999; i++) {
-
-            // Try to find empty cell
-            var cell = self.getRandomCell();
-
-            // If cell was not used, get it
-            if (pool[cell.id] === true) {
-
-                // If proviede compareCell, compare them, against equality
-                if (compareCell && cell.id === compareCell.id) {
-                    continue;
-                }
-
-                pool[cell.id] = false;
-                return cell;
-            }
-        }
-    };
-    for (var i = 0; i < count; i++) {
-        pool[this.cells[i].id] = true;
-    }
-
-    //[START] One way generator (single solution)
-
-    // Get first (last) random cell
-    var pcell = getRandomCellFromPull();
-
-    // Iterate over N cells
-    for (var i = 0; i < part; i++) {
-        // Get new random cell
-        var cell = getRandomCellFromPull(pcell);
-
-        // Connect random cell with previous cell
-        pcell.connect( cell, true );
-        // Overwrite previous with current
-        pcell = cell;
-    }
-
-    //[END] One way
-
-
-    //[START] Double switchers generator, use last (first) of previous generator
-
-    for (var i = 0; i < part; i++) {
-        var cell = null;
-
-        for (var j = 0; j < 2; j++, i++) {
-            cell = getRandomCellFromPull(pcell);
-            pcell.connect( cell );
-        };
 
         pcell = cell;
     }
