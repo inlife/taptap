@@ -370,75 +370,16 @@ Game.prototype.connectCells_v1 = function() {
     //[END] Double switchers
 };
 
-
-
-
 /**
- * main algo v2  TODO: repeat usage of same cells, but prevent infinite cycles, by providing minimum one-way exit
+ * main algo v2  [TODO]: repeat usage of same cells, but prevent infinite cycles, by providing minimum one-way exit
+ * Notes:
+ * 
+ * Sample algo idea: 
+ * (1) 1..N - Basic K-element cycles. ex: 1-3-5-1
+ * (2) 1..K/2 T-like (2 out 1 in) way-outs from each (1) cycle
+ * (3) N 1..M length chain-switches after (2), with possible interference with (2) or (3)
+ * (4) Rest of emtpy values are randomly chained, with possbile interference with (3) or (4)
  */
-Game.prototype.connectCells = function() {
+Game.prototype.connectCells_v2 = function() {
     var self = this;
-
-    var count = this.size * this.size;
-    var part = Math.floor( count / 100 * this.percent );
-
-    // Generate pool of free cells
-    var pool = {};
-    var getRandomCellFromPull = function(compareCell) {
-        // Pseudo infinite cycle (ends after 9999 iterations)
-        for (var i = 0; i < 9999; i++) {
-
-            // Try to find empty cell
-            var cell = self.getRandomCell();
-
-            // If cell was not used, get it
-            if (pool[cell.id] === true) {
-
-                // If proviede compareCell, compare them, against equality
-                if (compareCell && cell.id === compareCell.id) {
-                    continue;
-                }
-
-                pool[cell.id] = false;
-                return cell;
-            }
-        }
-    };
-    for (var i = 0; i < count; i++) {
-        pool[this.cells[i].id] = true;
-    }
-
-    //[START] One way generator (single solution)
-
-    // Get first (last) random cell
-    var pcell = getRandomCellFromPull();
-
-    // Iterate over N cells
-    for (var i = 0; i < part * 2; i++) {
-        // Get new random cell
-        var cell = getRandomCellFromPull(pcell);
-
-        // Connect random cell with previous cell
-        pcell.connect( cell, true );
-        // Overwrite previous with current
-
-        for (var j = 0; j < 2; j++, i++) {
-            cell = getRandomCellFromPull(pcell);
-            pcell.connect( cell );
-        };
-        pcell = cell;
-    }
-
-    //[END] One way
-
-
-    //[START] Double switchers generator, use last (first) of previous generator
-
-    for (var i = 0; i < part; i++) {
-        var cell = null;
-
-        pcell = cell;
-    }
-
-    //[END] Double switchers
 };
