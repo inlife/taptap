@@ -10,7 +10,7 @@ $(document).ready(function() {
         field: '.field',
         line: '.line',
         cell: '.cell'
-    }, 3);
+    }, 4);
 
     // Bind resize event to game resize
     $(window).resize(function() {
