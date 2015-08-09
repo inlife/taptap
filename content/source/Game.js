@@ -71,7 +71,7 @@ var Game = function() {
             console.log('you won! now it will be restarted, and BIGGER!!');
 
             setTimeout(function() {
-                self.restart( self.size + 1 );
+                self.restart();
             }, 1000);
 
         });
@@ -102,7 +102,7 @@ var Game = function() {
      * @param {int} [size] - If provided, game will be also resized
      */
     Game.prototype.restart = function(size) {
-        this.setSize( (size) ? size : this.size );
+        this.setSize( (size) ? size : this.size, true );
     };
 
     /**
