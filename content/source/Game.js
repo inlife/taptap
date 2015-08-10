@@ -44,7 +44,7 @@ var Game = function() {
      *
      * Available events:
      * game:
-     *    - complete|save|load
+     *    - complete|save|load|generated
      * cell:
      *    - toggle
      */
@@ -112,7 +112,7 @@ var Game = function() {
      * @param {bool} [force] - Force size, useful for restart
      */
     Game.prototype.setSize = function(size, force) {
-        if (size != this.size || force === true) {
+        if (size && size != this.size || force === true) {
             // Save new size
             this.size = size;
 
@@ -185,7 +185,7 @@ var Game = function() {
             this.cells[i].remove();
             delete this.cells[i];
         };
-        this.cells = [];
+        this.cells.length = 0;
 
         this.entity.children().remove();
     };
@@ -255,6 +255,7 @@ var Game = function() {
             savedata.game.cells.push({
                 id: cell.id,
                 state: cell.state,
+                isMagic: cell.isMagic,
                 connected: connected
             });
         };
@@ -273,9 +274,48 @@ var Game = function() {
      * @param {string} [name=_sgp1_save_1] - Name of savefile, defaults to _sgp1_save_1
      */
     Game.prototype.load = function(name) {
+        var self = this;
+
+        // Default savefile name
         name = (name) ? name : '_sgp1_save_1';
 
-        console.log( store(name) );
+        // Load save data
+        var data = store(name);
+
+        // Set new game field size
+        this.setSize( data.game.size );
+
+        for (var i = this.cells.length - 1, j = 0; i >= 0; i--, j++) {
+            var ccell = this.cells[j];
+            var scell = data.game.cells[i];
+
+            // Set current cell data according to save data
+            ccell.setState( scell.state );
+            ccell.setMagic( (scell.isMagic) ? true : false );
+
+            // Reset connections
+            ccell.connected.length = 0;
+            for (var k = scell.connected.length - 1; k >= 0; k--) {
+
+                // Get cell by id, and connect them
+                ccell.connect(
+                    this.getCellById( scell.connected[k] )
+                );
+            };
+        };
+
+        // Trigger event 
+        self.trigger('game:load');
+    };
+
+    Game.prototype.getCellById = function(id) {
+        for (var i = this.cells.length - 1; i >= 0; i--) {
+            if (this.cells[i].id == id ) {
+                return this.cells[i];
+            }
+        };
+
+        return null;
     };
 
     /**
@@ -298,6 +338,7 @@ var Game = function() {
 
         // Launch main algo
         self.connectCells_v2();
+        self.trigger("game:generated");
     };
 
     /**
@@ -542,32 +583,24 @@ var Game = function() {
             // link generated cycles into sequence
             link: function() {
                 var self = cycles;
-
-                // Random cycle linking
-                // for (var i = 0; i < self.count - 1; i++) {
-                //     var cycle1 = self.getRandom();
-                //     var cycle2 = self.getRandom(cycle1);
-
-                //     var id1 = Math.floor( Math.random() * cycle1.length );
-                //     var id2 = Math.floor( Math.random() * cycle2.length );
-
-                //     cycle1[id1].connect( cycle2[id2] );
-                // }
-                // 
-             
+                
+                // Generated random count of elements between input and ouput elements, but not more then maxsize
                 var linkSequence = function(maxsize, input, output) {
 
+                    // Get big random
                     var rsize = Math.max(
                         Math.ceil( Math.random() * maxsize + 3),
                         Math.ceil( Math.random() * maxsize + 3)
                     );
 
+                    // If pool size less then our random, try setting smaller max size
                     if (rsize > pool.getFreeCount()) {
                         return linkSequence(maxsize - 1, input, output);
                     } 
 
                     var prev = input;
 
+                    // Connect elements
                     for (var i = 0; i < rsize; i++) {
                         var curr = pool.getRandomCell();
                         prev.connect( curr );
@@ -585,6 +618,7 @@ var Game = function() {
                 var base = self.data[0];
                 var last = base;
 
+                // Chain random number of cells from starting to first cycle
                 linkSequence(
                     maxsize,
                     starting,
@@ -595,10 +629,6 @@ var Game = function() {
                 for (var i = 1; i < self.count; i++) {
                     var rnd = (Math.random() * 2 > 1) ? true : false;
                     var curr = self.data[i];
-
-                    // self.getRandomCellFromCycle(base).connect(
-                    //     self.getRandomCellFromCycle(curr), true
-                    // );
 
                     linkSequence(
                         maxsize,

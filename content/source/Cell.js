@@ -95,8 +95,33 @@ var Cell = function() {
         this.entity.remove();
     };
 
+    /**
+     * Set "magic" property of cell
+     * @public
+     * @param {Boolean} isMagic
+     * @return {Cell} Pointer on itself
+     */
     Cell.prototype.setMagic = function(isMagic) {
         this.isMagic = isMagic;
+        return this;
+    };
+
+    /**
+     * Set state forcefully, and change html
+     * @public
+     * @param {Boolean} state
+     * @return {Cell} Pointer on itself
+     */
+    Cell.prototype.setState = function(state) {
+        this.state = state;
+
+        if (this.state && !this.entity.hasClass('on')) {
+            this.entity.toggleClass('on');
+        } else if (!this.state && this.entity.hasClass('on')) {
+            this.entity.toggleClass('on');
+        }
+
+        return this;
     };
 
     return Cell;
