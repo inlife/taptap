@@ -7,25 +7,25 @@ $c-bg: #272D2D;
 // These values are js-dependent
 // Need to be changed in css and js simultaneously
 $c-size: .88em; // cell size
-$c-space: 0.05em; // space between cells-cells and between borders-cells 
+$c-space: 0.05em; // space between cells-cells and between borders-cells
 $c-basic-scale: 100px; // default cell scale
 
 html {
-    // Disable scrolling
-    margin: 0; 
-    height: 100%; 
-    overflow: hidden
+    height: 100%;
 }
 
 body {
     background-color: $c-bg;
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 
+    font-family: sans-serif;
+    color: $c-block-bg;
+
     // for vertical align
     position: relative;
     display: table;
     width: 100%;
-    height: 100vh;
+    height: 100%;
 
     // Basic body scale, can be changed via device width
     font-size: $c-basic-scale;
@@ -40,7 +40,7 @@ body {
 
 main {
     margin: 0 auto;
-    
+
     // for vertical align
     display: table-cell;
     vertical-align: middle;
@@ -52,6 +52,7 @@ main {
     border-radius: $border-radius;
     overflow: hidden;
     padding: $c-space;
+    position: relative;
 }
 
 .line {
@@ -68,18 +69,54 @@ main {
     float: left;
     border-radius: $border-radius;
     box-sizing: border-box;
-
-    // Transition only for transforms (scaling)
-    transition: transform 100ms ease-in-out;
-
-    & {
-        background: $c-block-2;
-    }
+    background: $c-block-2;
     &.on {
         background: $c-block-1;
     }
-    &:active,
-    &.on:active {
-        transform: scale(0.85, 0.85);
+}
+
+.copyright {
+    margin: .2em auto;
+    opacity: 0.2;
+    p {
+        font-size: 1rem;
     }
 }
+
+a {
+    color: $c-block-bg;
+    &:hover {
+        opacity: 0.7;
+    }
+}
+
+.time {
+    margin: .2em auto;
+    color: $c-block-bg;
+    opacity: 0.2;
+    p {
+        font-size: 1.5em;
+        text-align: center;
+    }
+}
+
+
+
+.start {
+
+    .field:after {
+        background: rgba(0, 0, 0, .8);
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        content: "►";
+        line-height: 2.12em;
+        text-align: center;
+        font-size: 2em;
+        color: rgba(255, 255, 255, .4);
+    }
+
+}
+

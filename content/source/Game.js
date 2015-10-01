@@ -135,6 +135,13 @@ var Game = function() {
         this.entity.css('width' , this.getFieldSize());
         this.entity.css('height', this.getFieldSize());
 
+        // [TEMP]
+        $('.copyright').css('width' , this.getFieldSize());
+        $('.time').css('width' , this.getFieldSize());
+        $('.field').click(function(event) {
+            $('main').removeClass('start');
+        });
+
         if (window.innerWidth < this.getFieldSizeinPixelsStatic()) {
             $('body').css('font-size', window.innerWidth / this.size);
         }
@@ -260,7 +267,7 @@ var Game = function() {
             });
         };
 
-        // Save document, and trigger event 
+        // Save document, and trigger event
         // [TODO] Add encryption, to add minimal prevention for modifications
         store(name, savedata);
         self.trigger('game:save');
@@ -304,7 +311,7 @@ var Game = function() {
             };
         };
 
-        // Trigger event 
+        // Trigger event
         self.trigger('game:load');
     };
 
@@ -423,7 +430,7 @@ var Game = function() {
         var size = this.size;
         var field = size * size;
 
-        // Free cell pool 
+        // Free cell pool
         var pool = {
             data: {},
 
@@ -476,7 +483,7 @@ var Game = function() {
             minimum: 3, // minimal cycle size
             maximum: 6, // maximal cycle size
             // maximal number of available cells for cycle
-            limit: Math.ceil(field / 2), 
+            limit: Math.ceil(field / 2),
 
             // storage
             count: 0,
@@ -583,7 +590,7 @@ var Game = function() {
             // link generated cycles into sequence
             link: function() {
                 var self = cycles;
-                
+
                 // Generated random count of elements between input and ouput elements, but not more then maxsize
                 var linkSequence = function(maxsize, input, output) {
 
@@ -596,7 +603,7 @@ var Game = function() {
                     // If pool size less then our random, try setting smaller max size
                     if (rsize > pool.getFreeCount()) {
                         return linkSequence(maxsize - 1, input, output);
-                    } 
+                    }
 
                     var prev = input;
 
@@ -613,7 +620,7 @@ var Game = function() {
                 // Get one cell, and make it starting point
                 var starting = pool.getRandomCell();
                 starting.setMagic(true);
-                
+
                 var maxsize = Math.floor(pool.getFreeCount() / self.count);
                 var base = self.data[0];
                 var last = base;
@@ -648,7 +655,7 @@ var Game = function() {
                     chain.connect( curr );
                     chain = curr;
                 };
-            
+
             }
         };
 
