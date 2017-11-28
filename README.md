@@ -1,6 +1,9 @@
 # taptap
 
 Tiny puzzle/logical game, running in browser.
+Demo: https://inlife.github.io/taptap/
+
+> Timer is broken, never mind that :)
 
 ## Install
 
