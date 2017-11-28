@@ -1,11 +1,6 @@
-# Swap
-Game in development.
+# taptap
 
-##Dev plan:
-1. Timers/counters
-2. Tutorial
-3. Achievements, Score
-4. Social share
+Tiny puzzle/logical game, running in browser.
 
 ## Install
 
